@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate package files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Validate .sublime-syntax is well-formed YAML
+        run: |
+          python - <<'PY'
+          import yaml, sys
+          with open("Sema.sublime-syntax") as f:
+              # Skip the "%YAML 1.2" directive line that PyYAML doesn't accept.
+              doc = f.read().split("---", 1)[1]
+          data = yaml.safe_load(doc)
+          assert data["scope"] == "source.sema", data.get("scope")
+          assert data["version"] == 2, data.get("version")
+          assert "main" in data["contexts"], "missing main context"
+          print("Sema.sublime-syntax OK")
+          PY
+
+      - name: Validate JSON files
+        run: |
+          python - <<'PY'
+          import json
+          for path in ("Sema.sublime-build", "Sema.sublime-settings"):
+              with open(path) as f:
+                  # settings/build files allow // comments; strip them for the check.
+                  lines = [l for l in f if not l.lstrip().startswith("//")]
+              json.loads("".join(lines))
+              print(path, "OK")
+          PY
+
+      - name: Validate plist metadata is well-formed XML
+        run: |
+          python - <<'PY'
+          import plistlib, glob
+          for path in glob.glob("*.tmPreferences"):
+              with open(path, "rb") as f:
+                  plistlib.load(f)
+              print(path, "OK")
+          PY

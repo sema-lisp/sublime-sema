@@ -1,0 +1,36 @@
+; SYNTAX TEST "Packages/sublime-sema/Sema.sublime-syntax"
+
+; comment line
+; <- comment.line.semicolon.sema
+;    ^ comment.line.semicolon.sema
+
+#| block
+   comment #| nested |# still comment |#
+; <- comment.block.sema
+
+(define greeting "hello")
+; <- punctuation.paren.open.sema
+;^^^^^ keyword.control.definition.sema
+;       ^^^^^^^^ variable.other.sema
+;                ^^^^^^^ string.quoted.double.sema
+
+(defun square (x)
+;^^^^^ keyword.control.definition.sema
+;      ^^^^^^ entity.name.function.sema
+  (* x x))
+; ^ keyword.operator.arithmetic.sema
+
+(if (> n 0) :positive :negative)
+;^^ keyword.control.sema
+;    ^ keyword.operator.arithmetic.sema
+;           ^^^^^^^^^ constant.other.keyword.sema
+
+(map inc '(1 2 3))
+;^^^ support.function.sema
+;        ^ keyword.operator.quote.sema
+;          ^ constant.numeric.sema
+
+(llm/complete "prompt" #t nil)
+;^^^^^^^^^^^^ support.function.sema
+;                      ^^ constant.language.boolean.sema
+;                         ^^^ constant.language.nil.sema
