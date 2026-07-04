@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      # Gate the release on the same validation CI runs, so a bad tag
+      # never produces a published release (Package Control installs from tags).
+      - name: Validate package files
+        run: |
+          python - <<'PY'
+          import yaml, json, plistlib, glob
+          doc = open("Sema.sublime-syntax").read().split("---", 1)[1]
+          data = yaml.safe_load(doc)
+          assert data["scope"] == "source.sema"
+          assert data["version"] == 2
+          assert "main" in data["contexts"]
+          for path in ("Sema.sublime-build", "Sema.sublime-settings"):
+              json.loads("".join(l for l in open(path) if not l.lstrip().startswith("//")))
+          for path in glob.glob("*.tmPreferences"):
+              plistlib.load(open(path, "rb"))
+          print("all package files valid")
+          PY
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Sema for Sublime Text ${{ github.ref_name }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
