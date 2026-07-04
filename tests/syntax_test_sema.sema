@@ -18,7 +18,7 @@
 ;^^^^^ keyword.control.definition.sema
 ;      ^^^^^^ entity.name.function.sema
   (* x x))
-; ^ keyword.operator.arithmetic.sema
+;  ^ keyword.operator.arithmetic.sema
 
 (if (> n 0) :positive :negative)
 ;^^ keyword.control.sema
