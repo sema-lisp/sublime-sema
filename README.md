@@ -14,16 +14,6 @@
 
 Language support for [Sema](https://sema-lang.com), a Lisp dialect with first-class LLM primitives, for [Sublime Text](https://www.sublimetext.com) 4.
 
-## Features
-
-- Syntax highlighting for `.sema` files (special forms, builtins, LLM primitives, keywords, strings, numbers, characters, quote operators, and more) via a native `.sublime-syntax` definition
-- Comment toggling with `Cmd+/` / `Ctrl+/` (line `;` and block `#| |#`)
-- Symbol navigation (`Cmd+R` / `Ctrl+R`) for `define`, `defun`, `defmacro`, `defagent`, `deftool`, and friends
-- Build systems for **running** (`sema`), **formatting** (`sema fmt`), and **compiling** (`sema compile`)
-- Optional **language server** (`sema lsp`) via the [LSP](https://packagecontrol.io/packages/LSP) package: completions, hover docs, go-to-definition, references, rename, signature help, and diagnostics
-
-The scope names match [vscode-sema](https://github.com/sema-lisp/vscode-sema)'s TextMate grammar, so color schemes theme both editors identically.
-
 ## Install
 
 ### Package Control (recommended)
@@ -51,6 +41,14 @@ git clone https://github.com/sema-lisp/sublime-sema `
 ```
 
 Find the `Packages` directory quickly via the command palette → **Preferences: Browse Packages**.
+
+## Features
+
+- Syntax highlighting for `.sema` files (special forms, builtins, LLM primitives, keywords, strings, numbers, characters, quote operators, and more) via a native `.sublime-syntax` definition
+- Comment toggling with `Cmd+/` / `Ctrl+/` (line `;` and block `#| |#`)
+- Symbol navigation (`Cmd+R` / `Ctrl+R`) for `define`, `defun`, `defmacro`, `defagent`, `deftool`, and friends
+- Build systems for **running** (`sema`), **formatting** (`sema fmt`), and **compiling** (`sema compile`)
+- Optional **language server** (`sema lsp`) via the [LSP](https://packagecontrol.io/packages/LSP) package: completions, hover docs, go-to-definition, references, rename, signature help, and diagnostics
 
 ## Building & running
 
