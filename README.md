@@ -83,6 +83,12 @@ Syntax highlighting, comments, symbols, and build systems work without any extra
 
 Restart Sublime Text (or run **LSP: Restart Servers**). The `selector` matches this package's `source.sema` scope, so the server attaches to any `.sema` file.
 
+## Requirements
+
+- [Sublime Text](https://www.sublimetext.com) 4
+- The [`sema`](https://sema-lang.com) binary on your `PATH` — used by the build systems (`sema`, `sema fmt`, `sema compile`) and the language server (`sema lsp`)
+- The [LSP](https://packagecontrol.io/packages/LSP) package (optional) for IDE features
+
 ## Links
 
 - **Website** — [sema-lang.com](https://sema-lang.com)
