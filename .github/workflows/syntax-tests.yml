@@ -1,0 +1,24 @@
+name: Syntax Tests
+
+# Runs the `.sublime-syntax` against the assertions in tests/syntax_test_*.sema
+# inside a real headless Sublime Text, via the standard SublimeText/UnitTesting
+# harness. This is the authoritative check that the syntax actually applies the
+# scopes the tests expect (the ci.yml YAML validation only checks structure).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  syntax-tests:
+    name: Sublime Text (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: SublimeText/UnitTesting/actions/setup@v1
+      - uses: SublimeText/UnitTesting/actions/run-syntax-tests@v1
