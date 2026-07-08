@@ -1,0 +1,6 @@
+# Keep the distributed Package Control package lean: exclude dev-only files
+# from `git archive` exports (which is how Package Control fetches tags).
+tests/          export-ignore
+.github/        export-ignore
+.gitignore      export-ignore
+.gitattributes  export-ignore
