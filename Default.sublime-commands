@@ -1,0 +1,10 @@
+[
+	{
+		"caption": "Preferences: Sema Settings",
+		"command": "edit_settings",
+		"args": {
+			"base_file": "${packages}/Sema/Sema.sublime-settings",
+			"default": "// Sema Settings - User\n{\n\t$0\n}\n"
+		}
+	}
+]

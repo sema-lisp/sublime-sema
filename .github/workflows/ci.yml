@@ -48,6 +48,9 @@ jobs:
               print(path, "OK")
           PY
 
+      - name: Validate settings discovery
+        run: python tests/test_settings_discovery.py
+
       - name: Validate plist metadata is well-formed XML
         run: |
           python - <<'PY'

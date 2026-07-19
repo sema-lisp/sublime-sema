@@ -44,6 +44,9 @@ jobs:
           print("all package files valid")
           PY
 
+      - name: Validate settings discovery
+        run: python tests/test_settings_discovery.py
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
