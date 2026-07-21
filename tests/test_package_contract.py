@@ -72,14 +72,21 @@ class PackageContractTests(unittest.TestCase):
         }
         self.assertEqual(variables, {"TM_COMMENT_START": "; "})
 
-    def test_documentation_uses_installable_package_paths_and_current_lsp_shape(self):
+    def test_documentation_is_current_and_narrative_free(self):
         readme = (ROOT / "README.md").read_text()
+        # installable paths / no stale references
+        self.assertIn("Packages/Sema", readme)
         self.assertNotIn("Packages/sublime-sema", readme)
         self.assertNotIn("block `#| |#`", readme)
         self.assertNotIn('"clients"', readme)
-        self.assertIn("Packages/Sema", readme)
-        self.assertIn("LanguageServers.sublime-settings", readme)
-        self.assertIn('"codeLensProvider": true', readme)
+        # lens is enabled now — no capability workaround, no narrative
+        self.assertNotIn("disabled_capabilities", readme)
+        self.assertNotIn("sema/evalResult", readme)
+        self.assertNotIn("incomplete feature", readme)
+        # new features documented
+        self.assertIn("Build executable", readme)
+        self.assertIn("Eval", readme)
+        self.assertIn("registers", readme)  # "registers its language server automatically"
 
     def test_syntax_fixtures_use_the_installed_package_name(self):
         expected_header = '; SYNTAX TEST "Packages/Sema/Sema.sublime-syntax"'

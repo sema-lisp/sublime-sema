@@ -45,10 +45,11 @@ Find the `Packages` directory quickly via the command palette → **Preferences:
 ## Features
 
 - Syntax highlighting for `.sema` files (special forms, builtins, LLM primitives, keywords, strings, numbers, characters, quote operators, and more) via a native `.sublime-syntax` definition
-- Comment toggling with `Cmd+/` / `Ctrl+/` using Sema's `;` line comments
+- Comment toggling with `Cmd+/` / `Ctrl+/` (Sema's `;` line comments)
 - Symbol navigation (`Cmd+R` / `Ctrl+R`) for `define`, `defun`, `defmacro`, `defagent`, `deftool`, and friends
-- Build systems for **running** (`sema`), **formatting** (`sema fmt`), and **compiling** (`sema compile`)
-- Optional **language server** (`sema lsp`) via the [LSP](https://packagecontrol.io/packages/LSP) package: completions, hover docs, go-to-definition, references, rename, signature help, and diagnostics
+- **Eval** the selection (or whole file) with `Cmd+Enter` / `Ctrl+Enter` — output shows in the Sema panel
+- Build systems for **running**, **formatting**, **compiling**, and **building a standalone executable**
+- Optional **language server** (`sema lsp`) via the [LSP](https://packagecontrol.io/packages/LSP) package
 
 ## Building & running
 
@@ -59,39 +60,22 @@ Open a `.sema` file and use **Tools → Build System → Sema** (or `Cmd+B` / `C
 | Sema | `sema <file>` — run the program |
 | Sema — Format | `sema fmt <file>` |
 | Sema — Compile to bytecode | `sema compile <file>` |
+| Sema — Build executable | `sema build <file>` |
 
-The build systems invoke the `sema` binary, so it must be on your `PATH`. Install it from [sema-lang.com](https://sema-lang.com).
+To evaluate code without a full build, select an expression and press `Cmd+Enter` / `Ctrl+Enter` (or run **Sema: Eval Selection or Buffer** from the command palette). With nothing selected, the whole file is evaluated. Output appears in the **Sema** panel.
+
+The build systems and the eval command invoke the `sema` binary, so it must be on your `PATH`. Install it from [sema-lang.com](https://sema-lang.com).
 
 ## Language server
 
-Syntax highlighting, comments, symbols, and build systems work without any extra setup. For IDE features (completions, hover, go-to-definition, diagnostics), Sema ships a language server behind `sema lsp`. Wire it up through the [LSP](https://packagecontrol.io/packages/LSP) package:
+For IDE features — completions, hover, go-to-definition, references, rename, signature help, diagnostics, and ▶ Run code lenses — install the [LSP](https://packagecontrol.io/packages/LSP) package via Package Control. Sema registers its `sema lsp` server automatically for `source.sema` files; no manual configuration is needed. Restart Sublime Text (or run **LSP: Restart Servers**) after installing LSP.
 
-1. Install **LSP** via Package Control.
-2. Open your Sublime Text `Packages/User` directory and create or edit `LanguageServers.sublime-settings`:
-
-```jsonc
-{
-  "sema": {
-    "enabled": true,
-    "command": ["sema", "lsp"],
-    "selector": "source.sema",
-    "disabled_capabilities": {
-      "codeLensProvider": true
-    }
-  }
-}
-```
-
-Restart Sublime Text (or run **LSP: Restart Servers**). The `selector` matches this package's `source.sema` scope, so the server attaches to any `.sema` file.
-
-Sema currently publishes a custom run action as a code lens, but the generic LSP package cannot display its custom `sema/evalResult` response. The configuration above disables that one incomplete feature while leaving standard LSP features enabled.
-
-Formatting from the build-system variant runs `sema fmt`. Formatter options belong in your project's `sema.toml`; this package does not duplicate them as editor preferences.
+To override the server command or options, edit `Packages/User/sema-lsp.sublime-settings`.
 
 ## Requirements
 
 - [Sublime Text](https://www.sublimetext.com) 4
-- The [`sema`](https://sema-lang.com) binary on your `PATH` — used by the build systems (`sema`, `sema fmt`, `sema compile`) and the language server (`sema lsp`)
+- The [`sema`](https://sema-lang.com) binary on your `PATH` — used by the build systems (`sema`, `sema fmt`, `sema compile`, `sema build`), the Eval command (`sema eval`), and the language server (`sema lsp`)
 - The [LSP](https://packagecontrol.io/packages/LSP) package (optional) for IDE features
 
 ## Links
