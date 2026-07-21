@@ -88,6 +88,17 @@ class PackageContractTests(unittest.TestCase):
         for fixture in fixtures:
             self.assertEqual(fixture.read_text().splitlines()[0], expected_header)
 
+    def test_lsp_session_settings_present(self):
+        settings = json.loads((ROOT / "sema-lsp.sublime-settings").read_text())
+        self.assertEqual(settings["command"], ["sema", "lsp"])
+        self.assertEqual(settings["selector"], "source.sema")
+        self.assertTrue(settings.get("enabled", False))
+
+    def test_lsp_plugin_module_is_guarded(self):
+        source = (ROOT / "sema_lsp.py").read_text()
+        self.assertIn("except ImportError", source)
+        self.assertIn("sema/evalResult", source)
+
 
 if __name__ == "__main__":
     unittest.main()
