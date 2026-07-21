@@ -15,7 +15,6 @@ first_line_match: '^#!.*\bsema\b'
 
 contexts:
   main:
-    - include: block-comment
     - include: line-comment
     - include: string
     - include: quoted-expression
@@ -34,19 +33,6 @@ contexts:
   # ---------------------------------------------------------------------
   # COMMENTS
   # ---------------------------------------------------------------------
-  block-comment:
-    - match: '#\|'
-      scope: punctuation.definition.comment.begin.sema
-      push: block-comment-body
-
-  block-comment-body:
-    - meta_scope: comment.block.sema
-    - match: '#\|'
-      push: block-comment-body
-    - match: '\|#'
-      scope: punctuation.definition.comment.end.sema
-      pop: true
-
   line-comment:
     - match: ';'
       scope: punctuation.definition.comment.sema

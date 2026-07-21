@@ -1,15 +1,15 @@
 {
 	"selector": "source.sema",
-	"shell_cmd": "sema \"$file\"",
+	"cmd": ["sema", "$file"],
 	"working_dir": "$file_path",
 	"variants": [
 		{
 			"name": "Format",
-			"shell_cmd": "sema fmt \"$file\""
+			"cmd": ["sema", "fmt", "$file"]
 		},
 		{
 			"name": "Compile to bytecode",
-			"shell_cmd": "sema compile \"$file\""
+			"cmd": ["sema", "compile", "$file"]
 		}
 	]
 }

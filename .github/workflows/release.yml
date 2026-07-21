@@ -37,15 +37,15 @@ jobs:
           assert data["scope"] == "source.sema"
           assert data["version"] == 2
           assert "main" in data["contexts"]
-          for path in ("Sema.sublime-build", "Sema.sublime-settings"):
+          for path in ("Sema.sublime-build",):
               json.loads("".join(l for l in open(path) if not l.lstrip().startswith("//")))
           for path in glob.glob("*.tmPreferences"):
               plistlib.load(open(path, "rb"))
           print("all package files valid")
           PY
 
-      - name: Validate settings discovery
-        run: python tests/test_settings_discovery.py
+      - name: Validate package contract
+        run: python tests/test_package_contract.py
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2

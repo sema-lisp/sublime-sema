@@ -1,12 +1,8 @@
-; SYNTAX TEST "Packages/sublime-sema/Sema.sublime-syntax"
+; SYNTAX TEST "Packages/Sema/Sema.sublime-syntax"
 
 ; comment line
 ; <- comment.line.semicolon.sema
 ;    ^ comment.line.semicolon.sema
-
-#| block
-   comment #| nested |# still comment |#
-; <- comment.block.sema
 
 (define greeting "hello")
 ; <- punctuation.paren.open.sema

@@ -40,7 +40,7 @@ jobs:
         run: |
           python - <<'PY'
           import json
-          for path in ("Sema.sublime-build", "Sema.sublime-settings"):
+          for path in ("Sema.sublime-build",):
               with open(path) as f:
                   # settings/build files allow // comments; strip them for the check.
                   lines = [l for l in f if not l.lstrip().startswith("//")]
@@ -48,8 +48,8 @@ jobs:
               print(path, "OK")
           PY
 
-      - name: Validate settings discovery
-        run: python tests/test_settings_discovery.py
+      - name: Validate package contract
+        run: python tests/test_package_contract.py
 
       - name: Validate plist metadata is well-formed XML
         run: |
