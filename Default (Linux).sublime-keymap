@@ -1,0 +1,9 @@
+[
+	{
+		"keys": ["ctrl+enter"],
+		"command": "sema_eval",
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "source.sema" }
+		]
+	}
+]

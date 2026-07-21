@@ -1,0 +1,17 @@
+[
+	{
+		"caption": "Tools",
+		"id": "tools",
+		"children": [
+			{
+				"caption": "Sema",
+				"children": [
+					{
+						"caption": "Eval Selection or Buffer",
+						"command": "sema_eval"
+					}
+				]
+			}
+		]
+	}
+]

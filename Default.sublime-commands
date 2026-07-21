@@ -1,0 +1,6 @@
+[
+	{
+		"caption": "Sema: Eval Selection or Buffer",
+		"command": "sema_eval"
+	}
+]

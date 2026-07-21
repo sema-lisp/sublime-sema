@@ -8,13 +8,33 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PackageContractTests(unittest.TestCase):
-    def test_package_does_not_expose_dead_settings(self):
-        for name in (
-            "Sema.sublime-settings",
-            "Default.sublime-commands",
-            "Main.sublime-menu",
+    def test_package_does_not_expose_dead_syntax_settings(self):
+        # The syntax-settings file (and its bogus comment_token) is gone.
+        self.assertFalse((ROOT / "Sema.sublime-settings").exists())
+
+    def test_python_38_host_opt_in(self):
+        self.assertEqual((ROOT / ".python-version").read_text().strip(), "3.8")
+
+    def test_eval_command_is_wired(self):
+        commands = json.loads((ROOT / "Default.sublime-commands").read_text())
+        self.assertTrue(any(c.get("command") == "sema_eval" for c in commands))
+        menu = json.loads((ROOT / "Main.sublime-menu").read_text())
+        self.assertIn("sema_eval", json.dumps(menu))
+        for keymap in (
+            "Default (OSX).sublime-keymap",
+            "Default (Linux).sublime-keymap",
+            "Default (Windows).sublime-keymap",
         ):
-            self.assertFalse((ROOT / name).exists(), name)
+            binding = json.loads((ROOT / keymap).read_text())
+            eval_bindings = [b for b in binding if b.get("command") == "sema_eval"]
+            self.assertTrue(eval_bindings, keymap)
+            self.assertTrue(
+                all(
+                    any(ctx.get("operand") == "source.sema" for ctx in b.get("context", []))
+                    for b in eval_bindings
+                ),
+                keymap,
+            )
 
     def test_build_system_uses_argument_arrays(self):
         with (ROOT / "Sema.sublime-build").open() as file:
