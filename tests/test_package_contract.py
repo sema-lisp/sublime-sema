@@ -95,11 +95,22 @@ class PackageContractTests(unittest.TestCase):
         for fixture in fixtures:
             self.assertEqual(fixture.read_text().splitlines()[0], expected_header)
 
-    def test_lsp_session_settings_present(self):
-        settings = json.loads((ROOT / "sema-lsp.sublime-settings").read_text())
+    def test_lsp_session_settings_disable_code_lens(self):
+        # .sublime-settings allows // line comments; strip them before parsing.
+        raw = (ROOT / "sema-lsp.sublime-settings").read_text()
+        cleaned = "".join(
+            line for line in raw.splitlines(keepends=True)
+            if not line.lstrip().startswith("//")
+        )
+        settings = json.loads(cleaned)
         self.assertEqual(settings["command"], ["sema", "lsp"])
         self.assertEqual(settings["selector"], "source.sema")
         self.assertTrue(settings.get("enabled", False))
+        # The per-form Run code lens runs sandboxed/no-LLM and duplicates the
+        # Eval command; it is disabled in Sublime.
+        self.assertTrue(
+            settings.get("disabled_capabilities", {}).get("codeLensProvider", False)
+        )
 
     def test_lsp_plugin_module_is_guarded(self):
         source = (ROOT / "sema_lsp.py").read_text()

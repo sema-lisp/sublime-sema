@@ -1,5 +1,16 @@
 {
+	// Auto-registered "sema" language server config for the LSP package.
 	"enabled": true,
 	"command": ["sema", "lsp"],
-	"selector": "source.sema"
+	"selector": "source.sema",
+
+	// The server emits a "Run" code lens on every top-level form, but it
+	// evaluates under `--sandbox strict --no-llm` (so it can't run LLM code)
+	// and duplicates the Sema: Eval command (Cmd/Ctrl+Enter), which is
+	// unsandboxed and LLM-enabled. The LSP package also renders lenses as noisy
+	// right-aligned annotations. Disabled here; delete this block to opt back in
+	// (sema_lsp.py still renders the result).
+	"disabled_capabilities": {
+		"codeLensProvider": true
+	}
 }

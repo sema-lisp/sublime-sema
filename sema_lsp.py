@@ -1,10 +1,15 @@
 """Optional LSP integration for Sema.
 
-Active only when the sublimelsp/LSP package is installed. When present it
-registers the `sema lsp` server automatically and renders the custom
-`sema/evalResult` notification (the result of the "Run" code lens) into the
-shared Sema output panel. When LSP is absent this module is an inert no-op, so
-the rest of the package works without it.
+Active only when the sublimelsp/LSP package is installed. Its main job is to
+register the `sema lsp` server automatically (zero-config) for `source.sema`
+files. When LSP is absent this module is an inert no-op, so the rest of the
+package works without it.
+
+The server's per-form "Run" code lens is disabled by default (see
+`sema-lsp.sublime-settings`): it runs sandboxed without LLM access and
+duplicates the Sema: Eval command. The `sema/evalResult` handler below is kept
+so that if a user re-enables the code lens, clicking Run still shows a result
+(into the shared Sema output panel) instead of being a silent no-op.
 """
 
 try:

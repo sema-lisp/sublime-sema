@@ -68,7 +68,7 @@ The build systems and the eval command invoke the `sema` binary, so it must be o
 
 ## Language server
 
-For IDE features — completions, hover, go-to-definition, references, rename, signature help, diagnostics, and ▶ Run code lenses — install the [LSP](https://packagecontrol.io/packages/LSP) package via Package Control. Sema registers its `sema lsp` server automatically for `source.sema` files; no manual configuration is needed. Restart Sublime Text (or run **LSP: Restart Servers**) after installing LSP.
+For IDE features — completions, hover, go-to-definition, references, rename, signature help, and diagnostics — install the [LSP](https://packagecontrol.io/packages/LSP) package via Package Control. Sema registers its `sema lsp` server automatically for `source.sema` files; no manual configuration is needed. Restart Sublime Text (or run **LSP: Restart Servers**) after installing LSP.
 
 To override the server command or options, edit `Packages/User/sema-lsp.sublime-settings`.
 
