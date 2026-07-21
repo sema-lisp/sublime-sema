@@ -28,7 +28,12 @@ class PackageContractTests(unittest.TestCase):
             [
                 ["sema", "fmt", "$file"],
                 ["sema", "compile", "$file"],
+                ["sema", "build", "$file"],
             ],
+        )
+        self.assertEqual(
+            [variant["name"] for variant in build["variants"]],
+            ["Format", "Compile to bytecode", "Build executable"],
         )
         self.assertTrue(
             all("shell_cmd" not in variant for variant in build["variants"])
