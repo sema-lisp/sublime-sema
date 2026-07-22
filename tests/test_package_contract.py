@@ -7,6 +7,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _without_comments(raw):
+    # Sublime's JSON dialect allows // line comments; strip them before parsing.
+    return "".join(
+        line for line in raw.splitlines(keepends=True)
+        if not line.lstrip().startswith("//")
+    )
+
+
 class PackageContractTests(unittest.TestCase):
     def test_package_does_not_expose_dead_syntax_settings(self):
         # The syntax-settings file (and its bogus comment_token) is gone.
@@ -20,21 +28,37 @@ class PackageContractTests(unittest.TestCase):
         self.assertTrue(any(c.get("command") == "sema_eval" for c in commands))
         menu = json.loads((ROOT / "Main.sublime-menu").read_text())
         self.assertIn("sema_eval", json.dumps(menu))
+
+    def test_keymaps_ship_no_active_bindings(self):
+        # Package Control policy: no live key bindings (they'd shadow core or
+        # other packages' chords) — only commented-out suggestions.
         for keymap in (
             "Default (OSX).sublime-keymap",
             "Default (Linux).sublime-keymap",
             "Default (Windows).sublime-keymap",
         ):
-            binding = json.loads((ROOT / keymap).read_text())
-            eval_bindings = [b for b in binding if b.get("command") == "sema_eval"]
-            self.assertTrue(eval_bindings, keymap)
-            self.assertTrue(
-                all(
-                    any(ctx.get("operand") == "source.sema" for ctx in b.get("context", []))
-                    for b in eval_bindings
-                ),
-                keymap,
-            )
+            raw = (ROOT / keymap).read_text()
+            self.assertEqual(json.loads(_without_comments(raw)), [], keymap)
+            self.assertIn("sema_eval", raw, keymap)  # suggestion is present
+            self.assertIn("source.sema", raw, keymap)  # ... and scoped
+
+    def test_settings_and_keymap_are_editable_from_ui(self):
+        # The st_package_reviewer bot warns when a .sublime-settings file has
+        # no command-palette / menu entry to edit it (split view, edit_settings).
+        commands = json.loads((ROOT / "Default.sublime-commands").read_text())
+        base_files = {
+            c["args"]["base_file"]
+            for c in commands
+            if c.get("command") == "edit_settings"
+        }
+        self.assertIn("${packages}/Sema/sema-lsp.sublime-settings", base_files)
+        self.assertIn("${packages}/Sema/Default ($platform).sublime-keymap", base_files)
+
+        menu_raw = (ROOT / "Main.sublime-menu").read_text()
+        menu = json.loads(menu_raw)
+        self.assertTrue(any(entry.get("id") == "preferences" for entry in menu))
+        self.assertIn('"edit_settings"', menu_raw)
+        self.assertIn("${packages}/Sema/sema-lsp.sublime-settings", menu_raw)
 
     def test_build_system_uses_argument_arrays(self):
         with (ROOT / "Sema.sublime-build").open() as file:
@@ -79,7 +103,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertNotIn("Packages/sublime-sema", readme)
         self.assertNotIn("block `#| |#`", readme)
         self.assertNotIn('"clients"', readme)
-        # lens is enabled now — no capability workaround, no narrative
+        # the code-lens workaround is an implementation detail — no narrative
         self.assertNotIn("disabled_capabilities", readme)
         self.assertNotIn("sema/evalResult", readme)
         self.assertNotIn("incomplete feature", readme)
@@ -96,13 +120,8 @@ class PackageContractTests(unittest.TestCase):
             self.assertEqual(fixture.read_text().splitlines()[0], expected_header)
 
     def test_lsp_session_settings_disable_code_lens(self):
-        # .sublime-settings allows // line comments; strip them before parsing.
         raw = (ROOT / "sema-lsp.sublime-settings").read_text()
-        cleaned = "".join(
-            line for line in raw.splitlines(keepends=True)
-            if not line.lstrip().startswith("//")
-        )
-        settings = json.loads(cleaned)
+        settings = json.loads(_without_comments(raw))
         self.assertEqual(settings["command"], ["sema", "lsp"])
         self.assertEqual(settings["selector"], "source.sema")
         self.assertTrue(settings.get("enabled", False))
@@ -116,6 +135,10 @@ class PackageContractTests(unittest.TestCase):
         source = (ROOT / "sema_lsp.py").read_text()
         self.assertIn("except ImportError", source)
         self.assertIn("sema/evalResult", source)
+        # Missing-binary and bare-GUI-PATH handling, so LSP users without the
+        # sema CLI get a hint instead of spawn errors.
+        self.assertIn("def can_start", source)
+        self.assertIn("def on_pre_start", source)
 
 
 if __name__ == "__main__":

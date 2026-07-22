@@ -1,9 +1,16 @@
 [
-	{
-		"keys": ["ctrl+enter"],
-		"command": "sema_eval",
-		"context": [
-			{ "key": "selector", "operator": "equal", "operand": "source.sema" }
-		]
-	}
+	// Sema ships no active key bindings. To bind the eval command, open
+	// Preferences > Package Settings > Sema > Key Bindings and copy the
+	// suggestion below into the user keymap on the right, then uncomment it.
+	//
+	// Note: ctrl+enter overrides Sublime's default "insert line after"
+	// inside Sema files; pick another chord if you rely on it.
+	//
+	// {
+	// 	"keys": ["ctrl+enter"],
+	// 	"command": "sema_eval",
+	// 	"context": [
+	// 		{ "key": "selector", "operator": "equal", "operand": "source.sema" }
+	// 	]
+	// }
 ]
