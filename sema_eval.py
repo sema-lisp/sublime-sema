@@ -20,6 +20,9 @@ except ImportError:  # running under plain Python (tests) — helpers still work
 
 
 DEFAULT_TIMEOUT_MS = 10000
+# Backstop for the `--timeout` passed to `sema eval`: a little grace on top,
+# so the CLI gets first shot at killing a runaway eval and we stay the fallback.
+PROCESS_TIMEOUT_S = DEFAULT_TIMEOUT_MS / 1000 + 5
 PANEL_NAME = "sema"
 COMMON_BIN_DIRS = (
     "/usr/local/bin",
@@ -105,13 +108,18 @@ def _startupinfo_kwargs():
     return {}
 
 
-def _resolve_sema():
+def resolve_sema(exe="sema"):
+    """Locate `exe` on an augmented PATH, or None if it isn't installed.
+
+    GUI-launched Sublime (especially on macOS) gets a bare launchd PATH that
+    misses cargo/homebrew install dirs, hence the augmentation.
+    """
     path = augmented_path(os.environ.get("PATH", ""), os.path.expanduser("~"))
-    return shutil.which("sema", path=path) or "sema"
+    return shutil.which(exe, path=path)
 
 
 def _evaluate(source, path):
-    argv = build_eval_argv(_resolve_sema(), path)
+    argv = build_eval_argv(resolve_sema() or "sema", path)
     try:
         proc = subprocess.Popen(
             argv,
@@ -120,12 +128,13 @@ def _evaluate(source, path):
             stderr=subprocess.PIPE,
             **_startupinfo_kwargs()
         )
-        out, err = proc.communicate(input=source.encode("utf-8"), timeout=30)
+        out, err = proc.communicate(input=source.encode("utf-8"), timeout=PROCESS_TIMEOUT_S)
     except FileNotFoundError as exc:
         return format_process_error(str(exc))
     except subprocess.TimeoutExpired:
         proc.kill()
-        return format_process_error("timed out after 30s")
+        proc.communicate()
+        return format_process_error("timed out after {:g}s".format(PROCESS_TIMEOUT_S))
     raw = out.decode("utf-8", "replace").strip()
     try:
         return format_result(json.loads(raw))
@@ -136,7 +145,7 @@ def _evaluate(source, path):
 
 if _ST:
 
-    def _show_panel(window, text):
+    def show_panel(window, text):
         if window is None:
             return
         panel = window.create_output_panel(PANEL_NAME)
@@ -156,10 +165,11 @@ if _ST:
                 return
             path = view.file_name()
             window = view.window()
+            sublime.status_message("Sema: evaluating...")
 
             def worker():
                 text = _evaluate(source, path)
-                sublime.set_timeout(lambda: _show_panel(window, text), 0)
+                sublime.set_timeout(lambda: show_panel(window, text), 0)
 
             threading.Thread(target=worker, daemon=True).start()
 

@@ -65,6 +65,12 @@ class EvalHelperTests(unittest.TestCase):
     def test_format_process_error_mentions_path(self):
         self.assertIn("PATH", se.format_process_error("No such file"))
 
+    def test_resolve_sema_missing_binary_returns_none(self):
+        self.assertIsNone(se.resolve_sema("definitely-not-a-real-binary-xyz"))
+
+    def test_process_timeout_exceeds_cli_timeout(self):
+        self.assertGreater(se.PROCESS_TIMEOUT_S, se.DEFAULT_TIMEOUT_MS / 1000)
+
 
 if __name__ == "__main__":
     unittest.main()
