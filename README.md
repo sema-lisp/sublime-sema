@@ -74,7 +74,7 @@ To override the server command or options, open **Preferences → Package Settin
 
 ## Key bindings
 
-The package ships no active key bindings, so it never overrides yours or Sublime's defaults. To bind the eval command, open **Preferences → Package Settings → Sema → Key Bindings** and add to the user keymap on the right:
+The package ships no active key bindings, so it never overrides yours or Sublime's defaults. To bind the eval command, open **Preferences → Package Settings → Sema → Key Bindings** — the left pane shows ready-to-copy examples, the right pane is your user keymap. For instance:
 
 ```json
 [

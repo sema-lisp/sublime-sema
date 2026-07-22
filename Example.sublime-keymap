@@ -1,0 +1,27 @@
+[
+	// Sema ships no active key bindings. Sublime Text does not load this file
+	// (non-standard keymap name) — it holds ready-to-copy examples. Open
+	// Preferences > Package Settings > Sema > Key Bindings and copy the entry
+	// for your platform into the user keymap on the right.
+	//
+	// Note: this chord shadows Sublime's built-in "insert line after" inside
+	// Sema files; pick another if you rely on it.
+
+	// macOS
+	{
+		"keys": ["super+enter"],
+		"command": "sema_eval",
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "source.sema" }
+		]
+	},
+
+	// Windows / Linux
+	{
+		"keys": ["ctrl+enter"],
+		"command": "sema_eval",
+		"context": [
+			{ "key": "selector", "operator": "equal", "operand": "source.sema" }
+		]
+	}
+]

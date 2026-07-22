@@ -100,12 +100,18 @@ def format_process_error(detail):
     ).format(detail)
 
 
-def _startupinfo_kwargs():
-    if os.name == "nt":
-        si = subprocess.STARTUPINFO()
-        si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        return {"startupinfo": si}
-    return {}
+def _startupinfo():
+    """STARTUPINFO hiding the console window on Windows; None elsewhere."""
+    if os.name != "nt":
+        return None
+    si = subprocess.STARTUPINFO()
+    si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    si.wShowWindow = subprocess.SW_HIDE
+    return si
+
+
+def _creationflags():
+    return subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
 
 
 def resolve_sema(exe="sema"):
@@ -126,7 +132,8 @@ def _evaluate(source, path):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            **_startupinfo_kwargs()
+            startupinfo=_startupinfo(),
+            creationflags=_creationflags(),
         )
         out, err = proc.communicate(input=source.encode("utf-8"), timeout=PROCESS_TIMEOUT_S)
     except FileNotFoundError as exc:

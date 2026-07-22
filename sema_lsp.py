@@ -6,7 +6,7 @@ files. When LSP is absent this module is an inert no-op, so the rest of the
 package works without it.
 
 The server's per-form "Run" code lens is disabled by default (see
-`sema-lsp.sublime-settings`): it runs sandboxed without LLM access and
+`Sema.sublime-settings`): it runs sandboxed without LLM access and
 duplicates the Sema: Eval command. The `sema/evalResult` handler below is kept
 so that if a user re-enables the code lens, clicking Run still shows a result
 (into the shared Sema output panel) instead of being a silent no-op.
@@ -23,7 +23,7 @@ except ImportError:
 
 if _LSP:
 
-    SETTINGS_BASENAME = "sema-lsp.sublime-settings"
+    SETTINGS_BASENAME = "Sema.sublime-settings"
 
     class SemaLanguageServer(AbstractPlugin):
         @classmethod

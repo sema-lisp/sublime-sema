@@ -1,5 +1,6 @@
 import json
 import plistlib
+import re
 import unittest
 from pathlib import Path
 
@@ -16,9 +17,15 @@ def _without_comments(raw):
 
 
 class PackageContractTests(unittest.TestCase):
-    def test_package_does_not_expose_dead_syntax_settings(self):
-        # The syntax-settings file (and its bogus comment_token) is gone.
-        self.assertFalse((ROOT / "Sema.sublime-settings").exists())
+    def test_settings_file_carries_no_editor_preferences(self):
+        # Sema.sublime-settings is the LSP client config only. Editor
+        # preferences (like the once-shipped bogus comment_token) belong to
+        # the user, not the package — reviewer feedback on PR #9468.
+        raw = (ROOT / "Sema.sublime-settings").read_text()
+        settings = json.loads(_without_comments(raw))
+        self.assertNotIn("comment_token", settings)
+        self.assertNotIn("tab_size", settings)
+        self.assertNotIn("translate_tabs_to_spaces", settings)
 
     def test_python_38_host_opt_in(self):
         self.assertEqual((ROOT / ".python-version").read_text().strip(), "3.8")
@@ -31,34 +38,50 @@ class PackageContractTests(unittest.TestCase):
 
     def test_keymaps_ship_no_active_bindings(self):
         # Package Control policy: no live key bindings (they'd shadow core or
-        # other packages' chords) — only commented-out suggestions.
+        # other packages' chords). Sublime only loads "Default (*).sublime-keymap"
+        # files, so those must not exist; Example.sublime-keymap is never loaded
+        # and holds ready-to-copy (uncommented) examples — the pattern the
+        # st_package_reviewer bot recommends.
         for keymap in (
             "Default (OSX).sublime-keymap",
             "Default (Linux).sublime-keymap",
             "Default (Windows).sublime-keymap",
         ):
-            raw = (ROOT / keymap).read_text()
-            self.assertEqual(json.loads(_without_comments(raw)), [], keymap)
-            self.assertIn("sema_eval", raw, keymap)  # suggestion is present
-            self.assertIn("source.sema", raw, keymap)  # ... and scoped
+            self.assertFalse((ROOT / keymap).exists(), keymap)
+
+        raw = (ROOT / "Example.sublime-keymap").read_text()
+        examples = json.loads(_without_comments(raw))
+        eval_bindings = [b for b in examples if b.get("command") == "sema_eval"]
+        self.assertTrue(eval_bindings)
+        for binding in eval_bindings:
+            self.assertTrue(
+                any(
+                    ctx.get("operand") == "source.sema"
+                    for ctx in binding.get("context", [])
+                ),
+                binding,
+            )
 
     def test_settings_and_keymap_are_editable_from_ui(self):
         # The st_package_reviewer bot warns when a .sublime-settings file has
-        # no command-palette / menu entry to edit it (split view, edit_settings).
-        commands = json.loads((ROOT / "Default.sublime-commands").read_text())
-        base_files = {
-            c["args"]["base_file"]
-            for c in commands
-            if c.get("command") == "edit_settings"
-        }
-        self.assertIn("${packages}/Sema/sema-lsp.sublime-settings", base_files)
-        self.assertIn("${packages}/Sema/Default ($platform).sublime-keymap", base_files)
+        # no command-palette / menu entry to edit it (split view, edit_settings),
+        # and FAILS entries whose base_file doesn't literally exist (it doesn't
+        # expand $platform) — hence the Example.sublime-keymap base + explicit
+        # user_file.
+        keymap_user_file = "${packages}/User/Default ($platform).sublime-keymap"
+        for source in ("Default.sublime-commands", "Main.sublime-menu"):
+            raw = (ROOT / source).read_text()
+            args = re.findall(r'"base_file":\s*"([^"]+)"', raw)
+            self.assertIn("${packages}/Sema/Sema.sublime-settings", args, source)
+            self.assertIn("${packages}/Sema/Example.sublime-keymap", args, source)
+            self.assertIn(keymap_user_file, raw, source)
+            # every base_file the entries point at must exist in the package
+            for base in args:
+                rel = base.replace("${packages}/Sema/", "")
+                self.assertTrue((ROOT / rel).exists(), base)
 
-        menu_raw = (ROOT / "Main.sublime-menu").read_text()
-        menu = json.loads(menu_raw)
+        menu = json.loads((ROOT / "Main.sublime-menu").read_text())
         self.assertTrue(any(entry.get("id") == "preferences" for entry in menu))
-        self.assertIn('"edit_settings"', menu_raw)
-        self.assertIn("${packages}/Sema/sema-lsp.sublime-settings", menu_raw)
 
     def test_build_system_uses_argument_arrays(self):
         with (ROOT / "Sema.sublime-build").open() as file:
@@ -120,7 +143,7 @@ class PackageContractTests(unittest.TestCase):
             self.assertEqual(fixture.read_text().splitlines()[0], expected_header)
 
     def test_lsp_session_settings_disable_code_lens(self):
-        raw = (ROOT / "sema-lsp.sublime-settings").read_text()
+        raw = (ROOT / "Sema.sublime-settings").read_text()
         settings = json.loads(_without_comments(raw))
         self.assertEqual(settings["command"], ["sema", "lsp"])
         self.assertEqual(settings["selector"], "source.sema")

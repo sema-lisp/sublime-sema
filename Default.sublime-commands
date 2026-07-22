@@ -7,15 +7,16 @@
 		"caption": "Preferences: Sema Settings",
 		"command": "edit_settings",
 		"args": {
-			"base_file": "${packages}/Sema/sema-lsp.sublime-settings",
-			"default": "// Settings in here override those in \"Sema/sema-lsp.sublime-settings\"\n{\n\t$0\n}\n"
+			"base_file": "${packages}/Sema/Sema.sublime-settings",
+			"default": "// Settings in here override those in \"Sema/Sema.sublime-settings\"\n{\n\t$0\n}\n"
 		}
 	},
 	{
 		"caption": "Preferences: Sema Key Bindings",
 		"command": "edit_settings",
 		"args": {
-			"base_file": "${packages}/Sema/Default ($platform).sublime-keymap",
+			"base_file": "${packages}/Sema/Example.sublime-keymap",
+			"user_file": "${packages}/User/Default ($platform).sublime-keymap",
 			"default": "[\n\t$0\n]\n"
 		}
 	}
