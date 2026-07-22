@@ -21,6 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: SublimeText/UnitTesting/actions/setup@v1
+        with:
+          # Install as "Sema" (the Package Control name) so the fixture
+          # headers' "Packages/Sema/Sema.sublime-syntax" path resolves.
+          package-name: Sema
       - uses: SublimeText/UnitTesting/actions/run-syntax-tests@v1
         with:
           # The syntax uses lookbehind assertions (?<=…) for word-boundary
