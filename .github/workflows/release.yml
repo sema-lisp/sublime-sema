@@ -47,6 +47,11 @@ jobs:
       - name: Validate package contract
         run: python tests/test_package_contract.py
 
+      - name: Run sema_eval helper tests
+        run: |
+          python tests/test_eval_command.py
+          python tests/test_eval_helpers_extended.py
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:

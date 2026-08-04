@@ -51,6 +51,13 @@ jobs:
       - name: Validate package contract
         run: python tests/test_package_contract.py
 
+      # The sema_eval helpers are plain Python — they need neither the Sublime
+      # plugin host nor the LSP package, so CI can run them directly.
+      - name: Run sema_eval helper tests
+        run: |
+          python tests/test_eval_command.py
+          python tests/test_eval_helpers_extended.py
+
       - name: Validate plist metadata is well-formed XML
         run: |
           python - <<'PY'
