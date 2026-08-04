@@ -86,7 +86,7 @@ contexts:
         2: keyword.control.definition.sema
         3: variable.other.sema
     # (defun|defmacro|... name ...)
-    - match: '(\()\s*(defun|defmacro|defmulti|defmethod|defagent|deftool|defn|defworkflow|define-record-type)\s+([\w!$%&*+\-./:<=>?@^~][\w!$%&*+\-./:<=>?@^~0-9]*)'
+    - match: '(\()\s*(defun|defmacro|defmulti|defmethod|defagent|deftool|defn|defworkflow|defpolicy|define-record-type)\s+([\w!$%&*+\-./:<=>?@^~][\w!$%&*+\-./:<=>?@^~0-9]*)'
       captures:
         1: punctuation.paren.open.sema
         2: keyword.control.definition.sema
@@ -102,7 +102,7 @@ contexts:
   # SPECIAL FORMS
   # ---------------------------------------------------------------------
   special-form:
-    - match: '(?<=[\s(\[{])(?:define|async|await|defn|def|progn|dotimes|for-range|with-retry|with-session|with-span|with-stream|defworkflow|defun|lambda|fn|if|if-let|cond|case|when|when-let|unless|let\*?|letrec|begin|do|while|and|or|set!|quote|quasiquote|unquote-splicing|unquote|define-record-type|defmacro|defmethod|defmulti|defagent|deftool|try|catch|throw|import|module|export|load|delay|force|eval|macroexpand|else|prompt|message|match\*|match)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:define|async|await|defn|def|progn|dotimes|for-range|with-retry|with-session|with-span|with-stream|defworkflow|defpolicy|defun|lambda|fn|if|if-let|cond|case|when|when-let|unless|let\*?|letrec|begin|do|while|and|or|set!|quote|quasiquote|unquote-splicing|unquote|define-record-type|defmacro|defmethod|defmulti|defagent|deftool|try|catch|throw|import|module|export|load|delay|force|eval|macroexpand|else|prompt|message|match\*|match)(?=[\s)\]}]|$)'
       scope: keyword.control.sema
 
   # ---------------------------------------------------------------------
@@ -241,7 +241,7 @@ contexts:
     - match: '(?<=[\s(\[{])(?:vector-store/create|vector-store/open|vector-store/save|vector-store/add|vector-store/search|vector-store/count|vector-store/delete)(?=[\s)\]}]|$)'
       scope: support.function.sema
     # Tool query functions
-    - match: '(?<=[\s(\[{])(?:tool/name|tool/description|tool/parameters)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:tool/name|tool/description|tool/parameters|tool/policy-subjects)(?=[\s)\]}]|$)'
       scope: support.function.sema
     # async builtins
     - match: '(?<=[\s(\[{])(?:async/all|async/await|async/cancel|async/cancelled\?|async/forced\?|async/map|async/pending\?|async/pool-map|async/promise\?|async/race|async/rejected|async/rejected\?|async/resolved|async/resolved\?|async/run|async/sleep|async/spawn|async/spawn-all|async/timeout)(?=[\s)\]}]|$)'
@@ -301,7 +301,7 @@ contexts:
     - match: '(?<=[\s(\[{])(?:time/ms|time/now-ms|time/tick)(?=[\s)\]}]|$)'
       scope: support.function.sema
     # workflow builtins
-    - match: '(?<=[\s(\[{])(?:settled/err\?|settled/ok\?|checkpoint|parallel|parallel-settled|phase|pipeline|pipeline-settled|settled-partition|step|workflow/check|workflow/checkpoint|workflow/phase|workflow/run|workflow/run-form|workflow/step|workflow/tool-call)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:approval|settled/err\?|settled/ok\?|checkpoint|parallel|parallel-settled|phase|pipeline|pipeline-settled|policy/without|settled-partition|step|workflow/approval|workflow/check|workflow/checkpoint|workflow/phase|workflow/policy-without|workflow/run|workflow/run-form|workflow/step|workflow/tool-call|workflow/tool-result)(?=[\s)\]}]|$)'
       scope: support.function.sema
     # diff builtins
     - match: '(?<=[\s(\[{])(?:diff/apply|diff/hunks|diff/parse|diff/stat|diff/unified)(?=[\s)\]}]|$)'
