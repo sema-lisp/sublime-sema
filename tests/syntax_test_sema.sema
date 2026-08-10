@@ -30,3 +30,13 @@
 ;^^^^^^^^^^^^ support.function.sema
 ;                      ^^ constant.language.boolean.sema
 ;                         ^^^ constant.language.nil.sema
+
+(regex/match? #"\d+" "abc123")
+;^^^^^^^^^^^^ support.function.sema
+;             ^^^^^^ string.regexp.sema
+
+(regex/match? #"\"[^\"]+\"" text)
+;             ^^^^^^^^^^^^^ string.regexp.sema
+
+(regex/match? #"\\" text)
+;             ^^^^^ string.regexp.sema

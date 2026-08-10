@@ -16,6 +16,7 @@ first_line_match: '^#!.*\bsema\b'
 contexts:
   main:
     - include: line-comment
+    - include: regex
     - include: string
     - include: quoted-expression
     - include: definition
@@ -44,6 +45,17 @@ contexts:
   # ---------------------------------------------------------------------
   # STRINGS
   # ---------------------------------------------------------------------
+  regex:
+    - match: '#"'
+      scope: punctuation.definition.string.begin.sema string.regexp.sema
+      push:
+        - meta_scope: string.regexp.sema
+        - match: '\\.'
+          scope: string.regexp.sema
+        - match: '"'
+          scope: punctuation.definition.string.end.sema string.regexp.sema
+          pop: true
+
   string:
     - match: '"'
       scope: punctuation.definition.string.begin.sema
