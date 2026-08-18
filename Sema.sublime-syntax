@@ -343,7 +343,7 @@ contexts:
     - match: '(?<=[\s(\[{])(?:pii/detect)(?=[\s)\]}]|$)'
       scope: support.function.sema
     # proc builtins
-    - match: '(?<=[\s(\[{])(?:proc/close|proc/close-stdin|proc/exit-code|proc/kill|proc/read-stderr|proc/read-stdout|proc/running\?|proc/spawn|proc/wait|proc/write-stdin)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:proc/close|proc/close-stdin|proc/exit-code|proc/kill|proc/read-stderr|proc/read-stdout|proc/run|proc/running\?|proc/spawn|proc/wait|proc/write-stdin)(?=[\s)\]}]|$)'
       scope: support.function.sema
     # pty builtins
     - match: '(?<=[\s(\[{])(?:pty/close|pty/exit-code|pty/kill|pty/read|pty/resize|pty/running\?|pty/spawn|pty/wait|pty/write)(?=[\s)\]}]|$)'
