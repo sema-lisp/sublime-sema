@@ -124,6 +124,14 @@ def resolve_sema(exe="sema"):
     return shutil.which(exe, path=path)
 
 
+def resolve_build_argv(argv):
+    """Return a build argv with its Sema executable resolved, or None."""
+    if not argv:
+        return None
+    executable = resolve_sema(argv[0])
+    return [executable] + list(argv[1:]) if executable else None
+
+
 def _evaluate(source, path):
     argv = build_eval_argv(resolve_sema() or "sema", path)
     try:
@@ -183,3 +191,15 @@ if _ST:
         def is_enabled(self):
             syntax = self.view.syntax()
             return bool(syntax and "source.sema" in (syntax.scope or ""))
+
+    class SemaBuildCommand(sublime_plugin.WindowCommand):
+        """Run a Sema build-system command with the same PATH as eval and LSP."""
+
+        def run(self, **kwargs):
+            argv = resolve_build_argv(kwargs.get("cmd"))
+            if argv is None:
+                show_panel(self.window, format_process_error("the sema executable was not found"))
+                return
+            exec_args = dict(kwargs)
+            exec_args["cmd"] = argv
+            self.window.run_command("exec", exec_args)

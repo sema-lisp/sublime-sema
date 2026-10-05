@@ -68,6 +68,25 @@ class EvalHelperTests(unittest.TestCase):
     def test_resolve_sema_missing_binary_returns_none(self):
         self.assertIsNone(se.resolve_sema("definitely-not-a-real-binary-xyz"))
 
+    def test_resolve_build_argv_uses_absolute_executable(self):
+        original = se.resolve_sema
+        se.resolve_sema = lambda _exe: "/opt/sema/bin/sema"
+        try:
+            self.assertEqual(
+                se.resolve_build_argv(["sema", "fmt", "/tmp/x.sema"]),
+                ["/opt/sema/bin/sema", "fmt", "/tmp/x.sema"],
+            )
+        finally:
+            se.resolve_sema = original
+
+    def test_resolve_build_argv_reports_missing_executable(self):
+        original = se.resolve_sema
+        se.resolve_sema = lambda _exe: None
+        try:
+            self.assertIsNone(se.resolve_build_argv(["sema", "/tmp/x.sema"]))
+        finally:
+            se.resolve_sema = original
+
     def test_process_timeout_exceeds_cli_timeout(self):
         self.assertGreater(se.PROCESS_TIMEOUT_S, se.DEFAULT_TIMEOUT_MS / 1000)
 

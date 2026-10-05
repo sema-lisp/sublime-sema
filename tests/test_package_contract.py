@@ -88,6 +88,7 @@ class PackageContractTests(unittest.TestCase):
             build = json.load(file)
 
         self.assertEqual(build["cmd"], ["sema", "$file"])
+        self.assertEqual(build["target"], "sema_build")
         self.assertEqual(build["working_dir"], "$file_path")
         self.assertNotIn("shell_cmd", build)
         self.assertEqual(
@@ -118,6 +119,20 @@ class PackageContractTests(unittest.TestCase):
             for item in preferences["settings"]["shellVariables"]
         }
         self.assertEqual(variables, {"TM_COMMENT_START": "; "})
+
+    def test_syntax_covers_numeric_tower_and_documented_symbols(self):
+        syntax = (ROOT / "Sema.sublime-syntax").read_text()
+        self.assertIn("#[eEiI]#[xX]", syntax)
+        self.assertIn("[0-9]+(?:/[0-9]+", syntax)
+        self.assertNotIn("0[xX][0-9a-fA-F]+", syntax)
+        for name in (
+            "bytes/length",
+            "async/with-timeout",
+            "path/canonicalize",
+            "db/open",
+            "workflow/mcp-handle",
+        ):
+            self.assertIn(name, syntax)
 
     def test_documentation_is_current_and_narrative_free(self):
         readme = (ROOT / "README.md").read_text()
@@ -162,6 +177,11 @@ class PackageContractTests(unittest.TestCase):
         # sema CLI get a hint instead of spawn errors.
         self.assertIn("def can_start", source)
         self.assertIn("def on_pre_start", source)
+
+    def test_release_uses_package_control_tag_format(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text()
+        self.assertIn('"[0-9]+.[0-9]+.[0-9]+"', workflow)
+        self.assertNotIn('"v[0-9]+.[0-9]+.[0-9]+"', workflow)
 
 
 if __name__ == "__main__":
