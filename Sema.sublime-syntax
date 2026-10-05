@@ -22,8 +22,8 @@ contexts:
     - include: definition
     - include: special-form
     - include: threading-macro
-    - include: builtin
     - include: operator
+    - include: builtin
     - include: keyword-literal
     - include: character
     - include: boolean
