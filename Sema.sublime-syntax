@@ -114,14 +114,14 @@ contexts:
   # SPECIAL FORMS
   # ---------------------------------------------------------------------
   special-form:
-    - match: '(?<=[\s(\[{])(?:define|async|await|defn|def|progn|dotimes|for-range|guard|with-retry|with-session|with-span|with-stream|with-open|llm/with-budget|policy/without|io/with-raw-mode|term/with-alt-screen|term/with-mouse|defworkflow|defpolicy|defun|lambda|fn|if|if-let|cond|case|when|when-let|unless|let\*?|letrec|begin|do|while|and|or|set!|quote|quasiquote|unquote-splicing|unquote|define-record-type|defmacro|defmethod|defmulti|defagent|deftool|try|catch|throw|import|module|export|load|delay|force|eval|macroexpand|else|prompt|message|match\*|match)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:define|async|await|defn|def|progn|dotimes|for-range|guard|with-retry|with-session|with-span|with-stream|with-open|llm/with-budget|policy/without|io/with-raw-mode|term/with-alt-screen|term/with-mouse|term/with-bracketed-paste|term/with-focus-events|term/with-kitty-keys|parameterize|defworkflow|defpolicy|defun|lambda|fn|if|if-let|cond|case|when|when-let|unless|let\*?|letrec|begin|do|while|and|or|set!|quote|quasiquote|unquote-splicing|unquote|define-record-type|defmacro|defmethod|defmulti|defagent|deftool|try|catch|throw|import|module|export|load|delay|force|eval|macroexpand|else|prompt|message|match\*|match)(?=[\s)\]}]|$)'
       scope: keyword.control.sema
 
   # ---------------------------------------------------------------------
   # OPERATORS
   # ---------------------------------------------------------------------
   operator:
-    - match: '(?<=[\s(\[{])(?:\+|\*|/|%|>=|<=|>(?!=)|<(?!=)|=|-|eqv\?)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:\+|\*|/|>=|<=|>(?!=)|<(?!=)|=|-|eq\?|equal\?)(?=[\s)\]}]|$)'
       scope: keyword.operator.arithmetic.sema
 
   threading-macro:
@@ -150,7 +150,7 @@ contexts:
       scope: constant.character.sema
 
   boolean:
-    - match: '(?<=[\s(\[{])(?:#t|#f|true|false)(?=[\s)\]}]|$)|^(?:#t|#f|true|false)(?=[\s)\]}]|$)'
+    - match: '(?<=[\s(\[{])(?:#true|#false|#t|#f|true|false)(?=[\s)\]}]|$)|^(?:#true|#false|#t|#f|true|false)(?=[\s)\]}]|$)'
       scope: constant.language.boolean.sema
 
   nil:
