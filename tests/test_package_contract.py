@@ -134,6 +134,22 @@ class PackageContractTests(unittest.TestCase):
         ):
             self.assertIn(name, syntax)
 
+    def test_reader_literals_and_operator_contract(self):
+        syntax = (ROOT / "Sema.sublime-syntax").read_text()
+        special = re.search(r"  special-form:\n    - match: '([^\n]+)'", syntax).group(1)
+        boolean = re.search(r"  boolean:\n    - match: '([^\n]+)'", syntax).group(1)
+        operator = re.search(r"  operator:\n    - match: '([^\n]+)'", syntax).group(1)
+        for name in ("parameterize", "term/with-bracketed-paste",
+                     "term/with-focus-events", "term/with-kitty-keys"):
+            self.assertIsNotNone(re.search(special, "(" + name + " x)"), name)
+        for value in ("#t", "#f", "#true", "#false"):
+            self.assertIsNotNone(re.search(boolean, "(" + value + ")"), value)
+        self.assertIsNone(re.search(boolean, "(#truex)"))
+        for name in ("eq?", "equal?"):
+            self.assertIsNotNone(re.search(operator, "(" + name + " x y)"), name)
+        for name in ("eqv?", "%"):
+            self.assertIsNone(re.search(operator, "(" + name + " x y)"), name)
+
     def test_documentation_is_current_and_narrative_free(self):
         readme = (ROOT / "README.md").read_text()
         # installable paths / no stale references
